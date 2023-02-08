@@ -1,0 +1,51 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>S3 Album</title>
+    {% tailwind_css %}
+  </head>
+  <body>
+    <div class="flex flex-wrap m-4">
+      <div id="album">
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  function customFetch(url, options) {
+    return fetch(url, options)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  }
+  
+  async function getPictures(limit=10000){
+    let url = 'http://localhost:8000/api/pictures/?limit=' + Number(limit);
+    return await customFetch(url);
+  }
+
+  async function showPictures(){
+    let data = await getPictures();
+    const album = document.getElementById('album');
+
+    data.results.forEach(function(row) {
+      let elem = document.createElement("img");
+      elem.setAttribute("src", row.url);
+      elem.classList.add("m-3");
+      elem.classList.add("rounded-xl");
+      elem.classList.add("h-60");
+      elem.classList.add("float-left");
+      album.appendChild(elem);
+    })
+  }
+
+  showPictures();
+</script>
